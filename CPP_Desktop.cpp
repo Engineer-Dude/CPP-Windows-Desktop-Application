@@ -4,9 +4,11 @@
 #include "framework.h"
 #include "CPP_Desktop.h"
 
+// These are used for the processing of the png image.
 #include <wincodec.h>
 #pragma comment(lib, "windowscodecs.lib")
 
+// These are used for displaying the png image.
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
@@ -16,18 +18,24 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+
+// This is used for changing the color of the window background.
 HBRUSH hbrWindowBackground;
+
+// These are used for displaying the png image, including starting it up.
 IWICStream* pStream = nullptr;
 Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 ULONG_PTR gdiplusToken;
-Gdiplus::Status status = Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
+Gdiplus::Status gdiplusStartupStatus = Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-void LoadAndDisplayPng(HWND hwndParent);
+
+// This is a forward declaration of the method used for loading the lightbulb png image.
+void LoadLightbulbPng(HWND hwndParent);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -37,7 +45,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	if (status != Gdiplus::Ok)
+	if (gdiplusStartupStatus != Gdiplus::Ok)
 	{
 		MessageBox(nullptr, TEXT("Failed to initialize GDI+"), TEXT("Error"), MB_OK);
 		return -1;
@@ -71,6 +79,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
+	// This is for shutting Gdiplus
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 
 	return (int)msg.wParam;
@@ -198,9 +207,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			NULL							// Pointer not needed
 		);
 
-		LoadAndDisplayPng(hWnd);
-
-		UpdateWindow(hWnd);
+		LoadLightbulbPng(hWnd);
 
 		break;
 	}
@@ -284,7 +291,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	return (INT_PTR)FALSE;
 }
 
-void LoadAndDisplayPng(HWND hwndParent)
+void LoadLightbulbPng(HWND hwndParent)
 {
 	IWICImagingFactory* pFactory = nullptr;
 	IWICBitmapDecoder* pDecoder = nullptr;
