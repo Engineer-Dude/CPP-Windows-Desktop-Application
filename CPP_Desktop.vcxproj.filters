@@ -48,5 +48,11 @@
     <Image Include="Images\Lightbulb.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\..\..\..\..\My Drive (paul.phillips.phillipsengineer%40gmail.com) (1)\PhillipsEngineer Website - 3\Website\wwwroot\images\favicon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="favicon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
