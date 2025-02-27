@@ -256,7 +256,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: Add any drawing code that uses hdc here...
 		Gdiplus::Graphics graphics(hdc);
 		Gdiplus::Bitmap* pBitmap = Gdiplus::Bitmap::FromStream(pStream);
-		graphics.DrawImage(pBitmap, 0, 0);
+
+		// Scale the image.
+		float aspectRatio = static_cast<float>(pBitmap->GetWidth()) / pBitmap->GetHeight();
+		int newWidth = 100;
+		int newHeight = static_cast<int>(newWidth / aspectRatio);
+		Gdiplus::Rect destRect(0, 130, newWidth, newHeight);
+
+		// Draw the image.
+		graphics.DrawImage(pBitmap, destRect);
+
+		// Cleanup
 		delete pBitmap;
 
 		EndPaint(hWnd, &ps);
