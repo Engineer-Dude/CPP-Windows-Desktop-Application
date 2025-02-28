@@ -27,10 +27,16 @@
     <ClInclude Include="CPP_Desktop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DeviceRegister.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPP_Desktop.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceRegister.cpp">
+      <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

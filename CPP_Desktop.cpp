@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "CPP_Desktop.h"
+#include "DeviceRegister.h"
 
 // These are used for the processing of the png image.
 #include <wincodec.h>
@@ -42,7 +43,7 @@ Gdiplus::Status gdiplusStartupStatus = Gdiplus::GdiplusStartup(&gdiplusToken, &g
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom);
+HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, LONG& left, LONG& top, LONG& right, LONG& bottom);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 // This is a forward declaration of the method used for loading the lightbulb png image.
@@ -332,16 +333,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		bottom = (LONG)(top + 100);
 		rect = { left, top, right, bottom };
 
-		register_0_label = PlaceRegisterArea(hWnd, hdc, TEXT("Register 0"), left, top, right, bottom);
+		DeviceRegister reg_0 = DeviceRegister("Register 00", 3);
+		register_0_label = PlaceRegisterArea(hWnd, hdc, reg_0, left, top, right, bottom);
 
 		left = right + 20;
 		right = (LONG)(left + 150);
-		register_1_label = PlaceRegisterArea(hWnd, hdc, TEXT("Register 1"), left, top, right, bottom);
+		DeviceRegister reg_1 = DeviceRegister("Register 01", 3);
+		register_1_label = PlaceRegisterArea(hWnd, hdc, reg_1, left, top, right, bottom);
 
 		left = right + 20;
 		right = (LONG)(left + 150);
-		register_2_label = PlaceRegisterArea(hWnd, hdc, TEXT("Register 2"), left, top, right, bottom);
-
+		DeviceRegister reg_2 = DeviceRegister("Register 02", 3);
+		register_2_label = PlaceRegisterArea(hWnd, hdc, reg_2, left, top, right, bottom);
 
 		EndPaint(hWnd, &ps);
 		break;
@@ -355,7 +358,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom)
+HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, LONG& left, LONG& top, LONG& right, LONG& bottom)
 {
 	// Create a black pen
 	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
@@ -370,7 +373,7 @@ HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG&
 	// Create the label
 	HWND register_label = CreateWindow(
 		TEXT("STATIC"),					// Predefined class for a label
-		labelText,						// Text to display
+		reg.GetName_LPCWSTR(),			// Text to display
 		WS_CHILD | WS_VISIBLE,			// Styles
 		left + 10, top + 10, 100, 20,	// Position and size
 		hWnd,							// Parent window
