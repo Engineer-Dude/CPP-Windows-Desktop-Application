@@ -137,17 +137,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hInst = hInstance; // Store instance handle in our global variable
 
 	HWND hWnd = CreateWindowW(
-		szWindowClass,			// Window class name
-		szTitle,				// Window title
-		WS_OVERLAPPEDWINDOW,	// Window style
-		CW_USEDEFAULT,					// X position
-		CW_USEDEFAULT,						// Y position
-		600,					// Width
-		400,					// Height
-		nullptr,				// Parent window
-		nullptr,				// Menu
-		hInstance,				// Instance handle
-		nullptr);				// Additional application data
+		szWindowClass,								// Window class name
+		szTitle,									// Window title
+		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,	// Window style
+		CW_USEDEFAULT,								// X position
+		CW_USEDEFAULT,								// Y position
+		550,										// Width
+		400,										// Height
+		nullptr,									// Parent window
+		nullptr,									// Menu
+		hInstance,									// Instance handle
+		nullptr);									// Additional application data
 
 	if (!hWnd)
 	{
@@ -220,7 +220,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			TEXT("EDIT"),					// Predefined class
 			NULL,							// No default text
 			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,	// Styles
-			180,								// X-position
+			180,							// X-position
 			80,								// Y-position
 			200,							// Width
 			30,								// Height
@@ -232,8 +232,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		LoadLightbulbPng(hWnd);
 
-		break;
+		//break;
 	}
+		break;
 
 	case WM_CTLCOLORSTATIC:
 	{
@@ -318,15 +319,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		LONG left = 10L;
 		LONG top = 130L;
-		LONG right = LONG(left + 565);
+		LONG right = LONG(left + 510);
 		LONG bottom = LONG(top + 195);
 		RECT rect = { left, top, right, bottom };
 
 		FillRect(hdc, &rect, hbrRegisterArea);
-
-		// ==============================
-
-
 
 		// Define the rectangle for the individual register
 		left = 20L;
