@@ -27,7 +27,10 @@ HBRUSH hbrWhite;
 
 HPEN hBlackPen;
 
-HWND register_label;
+HWND register_0_label;
+HWND register_1_label;
+HWND register_2_label;
+
 
 // These are used for displaying the png image, including starting it up.
 IWICStream* pStream = nullptr;
@@ -39,7 +42,7 @@ Gdiplus::Status gdiplusStartupStatus = Gdiplus::GdiplusStartup(&gdiplusToken, &g
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-void PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom);
+HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 // This is a forward declaration of the method used for loading the lightbulb png image.
@@ -237,11 +240,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		HDC hdcStatic = (HDC)wParam;
 		HWND hwndStatic = (HWND)lParam;
 
-		if (hwndStatic == register_label)
+		if (hwndStatic == register_0_label || hwndStatic == register_1_label || hwndStatic == register_2_label)
 		{
 			SetTextColor(hdcStatic, RGB(0, 0, 0));
 			SetBkColor(hdcStatic, RGB(255, 255, 255));
-			
+
 			if (!hBrush)
 			{
 				hBrush = CreateSolidBrush(RGB(255, 255, 255));
@@ -319,13 +322,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		LONG bottom = LONG(top + 195);
 		RECT rect = { left, top, right, bottom };
 
-		FillRect(hdc,&rect, hbrRegisterArea);
+		FillRect(hdc, &rect, hbrRegisterArea);
 
 		// ==============================
 
-		// Create a black pen
-		HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
 
 		// Define the rectangle for the individual register
@@ -335,19 +335,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		bottom = (LONG)(top + 100);
 		rect = { left, top, right, bottom };
 
-		PlaceRegisterArea(hWnd, hdc, TEXT("Register 0"), left, top, right, bottom);
+		register_0_label = PlaceRegisterArea(hWnd, hdc, TEXT("Register 0"), left, top, right, bottom);
 
 		left = right + 20;
 		right = (LONG)(left + 150);
-		PlaceRegisterArea(hWnd, hdc, TEXT("Register 1"), left, top, right, bottom);
+		register_1_label = PlaceRegisterArea(hWnd, hdc, TEXT("Register 1"), left, top, right, bottom);
 
 		left = right + 20;
 		right = (LONG)(left + 150);
-		PlaceRegisterArea(hWnd, hdc, TEXT("Register 2"), left, top, right, bottom);
+		register_2_label = PlaceRegisterArea(hWnd, hdc, TEXT("Register 2"), left, top, right, bottom);
 
-		// Restore the old pen and clean up.
-		SelectObject(hdc, hOldPen);
-		DeleteObject(hPen);
 
 		EndPaint(hWnd, &ps);
 		break;
@@ -361,8 +358,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-void PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom)
+HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom)
 {
+	// Create a black pen
+	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+	HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
+
 	RECT rect = { left, top, right, bottom };
 
 	// Draw the rectangular border and fill it with white
@@ -370,7 +371,7 @@ void PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG&
 	FillRect(hdc, &rect, hbrWhite);
 
 	// Create the label
-	register_label = CreateWindow(
+	HWND register_label = CreateWindow(
 		TEXT("STATIC"),					// Predefined class for a label
 		labelText,						// Text to display
 		WS_CHILD | WS_VISIBLE,			// Styles
@@ -380,6 +381,12 @@ void PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG&
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 		NULL							// No additional parameters
 	);
+
+	// Restore the old pen and clean up.
+	SelectObject(hdc, hOldPen);
+	DeleteObject(hPen);
+
+	return register_label;
 }
 
 // Message handler for about box.
