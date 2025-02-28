@@ -27,7 +27,7 @@ HBRUSH hbrWhite;
 
 HPEN hBlackPen;
 
-HWND register_0_label;
+HWND register_label;
 
 // These are used for displaying the png image, including starting it up.
 IWICStream* pStream = nullptr;
@@ -39,6 +39,7 @@ Gdiplus::Status gdiplusStartupStatus = Gdiplus::GdiplusStartup(&gdiplusToken, &g
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+void PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 // This is a forward declaration of the method used for loading the lightbulb png image.
@@ -236,7 +237,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		HDC hdcStatic = (HDC)wParam;
 		HWND hwndStatic = (HWND)lParam;
 
-		if (hwndStatic == register_0_label)
+		if (hwndStatic == register_label)
 		{
 			SetTextColor(hdcStatic, RGB(0, 0, 0));
 			SetBkColor(hdcStatic, RGB(255, 255, 255));
@@ -327,30 +328,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
 
-
 		// Define the rectangle for the individual register
-		left = 10L + 10L;
+		left = 20L;
 		top = 130L + 10L;
 		right = (LONG)(left + 150);
 		bottom = (LONG)(top + 100);
 		rect = { left, top, right, bottom };
 
-		// Draw the rectangular border and fill it with white
-		Rectangle(hdc, left-1, top-1, right+1, bottom+1);
-		FillRect(hdc, &rect, hbrWhite);
+		PlaceRegisterArea(hWnd, hdc, TEXT("Register 0"), left, top, right, bottom);
 
-		register_0_label = CreateWindow(
-			TEXT("STATIC"),				// Predefined class for a label
-			TEXT("Register 0"),		// Text to display
-			WS_CHILD | WS_VISIBLE,		// Styles
-			left + 10, top + 10, 100, 20,			// Position and size
-			hWnd,						// Parent window
-			NULL,						// No menu
-			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-			NULL						// No additional parameters
-		);
+		left = right + 20;
+		right = (LONG)(left + 150);
+		PlaceRegisterArea(hWnd, hdc, TEXT("Register 1"), left, top, right, bottom);
 
-
+		left = right + 20;
+		right = (LONG)(left + 150);
+		PlaceRegisterArea(hWnd, hdc, TEXT("Register 2"), left, top, right, bottom);
 
 		// Restore the old pen and clean up.
 		SelectObject(hdc, hOldPen);
@@ -366,6 +359,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+void PlaceRegisterArea(HWND& hWnd, HDC hdc, LPCWSTR labelText, LONG& left, LONG& top, LONG& right, LONG& bottom)
+{
+	RECT rect = { left, top, right, bottom };
+
+	// Draw the rectangular border and fill it with white
+	Rectangle(hdc, left - 1, top - 1, right + 1, bottom + 1);
+	FillRect(hdc, &rect, hbrWhite);
+
+	// Create the label
+	register_label = CreateWindow(
+		TEXT("STATIC"),					// Predefined class for a label
+		labelText,						// Text to display
+		WS_CHILD | WS_VISIBLE,			// Styles
+		left + 10, top + 10, 100, 20,	// Position and size
+		hWnd,							// Parent window
+		NULL,							// No menu
+		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+		NULL							// No additional parameters
+	);
 }
 
 // Message handler for about box.
