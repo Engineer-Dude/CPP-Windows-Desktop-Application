@@ -19,8 +19,15 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-// This is used for changing the color of the window background.
+// Brushes
+HBRUSH hBrush = NULL;
 HBRUSH hbrWindowBackground;
+HBRUSH hbrRegisterArea;
+HBRUSH hbrWhite;
+
+HPEN hBlackPen;
+
+HWND register_0_label;
 
 // These are used for displaying the png image, including starting it up.
 IWICStream* pStream = nullptr;
@@ -165,6 +172,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE: {
 		hbrWindowBackground = CreateSolidBrush(RGB(13, 79, 132));
+		hbrRegisterArea = CreateSolidBrush(RGB(240, 240, 240));
+		hbrWhite = CreateSolidBrush(RGB(255, 255, 255));
 
 		HWND hLabel = CreateWindow(
 			TEXT("STATIC"),				// Predefined class for a label
@@ -222,6 +231,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdcStatic = (HDC)wParam;
+		HWND hwndStatic = (HWND)lParam;
+
+		if (hwndStatic == register_0_label)
+		{
+			SetTextColor(hdcStatic, RGB(0, 0, 0));
+			SetBkColor(hdcStatic, RGB(255, 255, 255));
+			
+			if (!hBrush)
+			{
+				hBrush = CreateSolidBrush(RGB(255, 255, 255));
+			}
+
+			// Return the brush to paint the background.
+			return (INT_PTR)hBrush;
+		}
+
+		break;
+	}
+
 	case WM_ERASEBKGND:
 	{
 		HDC hdc = (HDC)wParam;
@@ -271,13 +302,55 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		float aspectRatio = static_cast<float>(pBitmap->GetWidth()) / pBitmap->GetHeight();
 		int newWidth = 100;
 		int newHeight = static_cast<int>(newWidth / aspectRatio);
-		Gdiplus::Rect destRect(0, 130, newWidth, newHeight);
+		Gdiplus::Rect destRect(400, 10, newWidth, newHeight);
 
 		// Draw the image.
 		graphics.DrawImage(pBitmap, destRect);
 
 		// Cleanup
 		delete pBitmap;
+
+		// Draw border
+
+		LONG left = 10L;
+		LONG top = 130L;
+		LONG right = LONG(left + 565);
+		LONG bottom = LONG(top + 195);
+		RECT rect = { left, top, right, bottom };
+
+		//DrawEdge(hdc, &rect, EDGE_RAISED, BF_RECT);
+		FillRect(hdc,&rect, hbrRegisterArea);
+
+		// ==============================
+
+		left = 10L + 10L;
+		top = 130L + 10L;
+		right = (LONG)(left + 150);
+		bottom = (LONG)(top + 100);
+		rect = { left, top, right, bottom };
+
+		// Create a black pen
+		HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
+
+		// Draw the rectangular border and fill it with white
+		Rectangle(hdc, left-1, top-1, right+1, bottom+1);
+		FillRect(hdc, &rect, hbrWhite);
+
+		// Restore the old pen and clean up.
+		SelectObject(hdc, hOldPen);
+		DeleteObject(hPen);
+
+		register_0_label = CreateWindow(
+			TEXT("STATIC"),				// Predefined class for a label
+			TEXT("Register 0"),		// Text to display
+			WS_CHILD | WS_VISIBLE,		// Styles
+			left + 10, top + 10, 100, 20,			// Position and size
+			hWnd,						// Parent window
+			NULL,						// No menu
+			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+			NULL						// No additional parameters
+		);
 
 		EndPaint(hWnd, &ps);
 		break;
