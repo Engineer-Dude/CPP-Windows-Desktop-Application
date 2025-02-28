@@ -318,28 +318,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		LONG bottom = LONG(top + 195);
 		RECT rect = { left, top, right, bottom };
 
-		//DrawEdge(hdc, &rect, EDGE_RAISED, BF_RECT);
 		FillRect(hdc,&rect, hbrRegisterArea);
 
 		// ==============================
 
+		// Create a black pen
+		HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
+
+
+
+		// Define the rectangle for the individual register
 		left = 10L + 10L;
 		top = 130L + 10L;
 		right = (LONG)(left + 150);
 		bottom = (LONG)(top + 100);
 		rect = { left, top, right, bottom };
 
-		// Create a black pen
-		HPEN hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
-
 		// Draw the rectangular border and fill it with white
 		Rectangle(hdc, left-1, top-1, right+1, bottom+1);
 		FillRect(hdc, &rect, hbrWhite);
-
-		// Restore the old pen and clean up.
-		SelectObject(hdc, hOldPen);
-		DeleteObject(hPen);
 
 		register_0_label = CreateWindow(
 			TEXT("STATIC"),				// Predefined class for a label
@@ -351,6 +349,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 			NULL						// No additional parameters
 		);
+
+
+
+		// Restore the old pen and clean up.
+		SelectObject(hdc, hOldPen);
+		DeleteObject(hPen);
 
 		EndPaint(hWnd, &ps);
 		break;
