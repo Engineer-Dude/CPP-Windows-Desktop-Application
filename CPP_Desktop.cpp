@@ -551,7 +551,7 @@ void LoadLightbulbPng(HWND hwndParent)
 
 		HRESULT coInitializeResult = CoInitialize(nullptr);
 
-		if (coInitializeResult == NULL)
+		if (coInitializeResult != S_OK)
 		{
 			MessageBox(hwndParent, TEXT("CoInitialize failed."), TEXT("Error"), MB_OK);
 			return;
@@ -559,10 +559,11 @@ void LoadLightbulbPng(HWND hwndParent)
 
 	    HRESULT coCreateInstanceResult = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFactory));
 		
-		if (coCreateInstanceResult == NULL)
+		if (coCreateInstanceResult != S_OK)
 		{
 			MessageBox(hwndParent, TEXT("Failed to creates an instance of the specified COM object."), TEXT("Error"), MB_OK);
 		}
+
 		pFactory->CreateStream(&pStream);
 		pStream->InitializeFromMemory(reinterpret_cast<BYTE*>(pResourceData), imageSize);
 		pFactory->CreateDecoderFromStream(pStream, nullptr, WICDecodeMetadataCacheOnLoad, &pDecoder);
