@@ -5,6 +5,7 @@
 DeviceRegister::DeviceRegister(std::string name, int numberOfBits)
 	: name(name), numberOfBits(numberOfBits)
 {
+	bits = new RegisterBit[numberOfBits];
 }
 
 std::string DeviceRegister::GetName() { return name; }
@@ -17,3 +18,19 @@ LPCWSTR DeviceRegister::GetName_LPCWSTR()
 	return wideString;
 }
 
+int DeviceRegister::GetNumberOfBits() { return numberOfBits; }
+
+void DeviceRegister::SetBit(int position, RegisterBit bit)
+{
+	bits[position].SetDescription(bit.GetDescription());
+	bits[position].SetIsChecked(bit.GetIsChecked());
+}
+
+RegisterBit DeviceRegister::GetBit(int position)
+{
+	RegisterBit bit;
+	bit.SetDescription(bits[position].GetDescription());
+	bit.SetIsChecked(bits[position].GetIsChecked());
+
+	return bit;
+}

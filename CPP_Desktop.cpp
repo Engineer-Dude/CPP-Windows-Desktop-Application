@@ -289,6 +289,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_BUTTON1:
 			MessageBox(hWnd, TEXT("Button (click me) was pressed"), TEXT("Notification"), MB_OK);
 			break;
+		case ID_CHECKBOX_REG_0_0:
+			if (HIWORD(wParam) == BN_CLICKED)
+			{
+				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_0_0) == BST_CHECKED)
+				{
+					MessageBox(hWnd, TEXT("Checkbox REG_0_0 is checked"), TEXT("Notification"), MB_OK);
+				}
+				else
+				{
+					MessageBox(hWnd, TEXT("Checkbox REG_0_0 is unchecked"), TEXT("Notification"), MB_OK);
+				}
+			}
+			break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -330,10 +343,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		left = 20L;
 		top = 130L + 10L;
 		right = (LONG)(left + 150);
-		bottom = (LONG)(top + 100);
+		bottom = (LONG)(top + 120);
 		rect = { left, top, right, bottom };
 
 		DeviceRegister reg_0 = DeviceRegister("Register 00", 3);
+		
+		RegisterBit registerBit = RegisterBit();
+
+		for (int bitPosition = 0; bitPosition < reg_0.GetNumberOfBits(); bitPosition++)
+		{
+			registerBit.SetDescription("Bit " + std::to_string(bitPosition));
+			registerBit.SetIsChecked(true);
+			reg_0.SetBit(bitPosition, registerBit);
+		}
+
 		register_0_label = PlaceRegisterArea(hWnd, hdc, reg_0, left, top, right, bottom);
 
 		left = right + 20;
@@ -381,6 +404,23 @@ HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, LONG& left, LONG
 		(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 		NULL							// No additional parameters
 	);
+
+	for (int bitPosition = 0; bitPosition < reg.GetNumberOfBits(); bitPosition++)
+	{
+	    LPCWSTR description = reg.GetBit(bitPosition).GetDescription_LPCWSTR();
+		
+		HWND registerBit = CreateWindow(
+			TEXT("BUTTON"),					// Predefined class for a label
+			description,					// Text to display
+			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,	// Styles
+			left + 20, top + (bitPosition *30) + 30, 100, 20,	// Position and size
+			hWnd,							// Parent window
+			(HMENU)(ID_CHECKBOX_REG_0_0),	//
+			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+			NULL							// No additional parameters
+		);
+
+	}
 
 	// Restore the old pen and clean up.
 	SelectObject(hdc, hOldPen);

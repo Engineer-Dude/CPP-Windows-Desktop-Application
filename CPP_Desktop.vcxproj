@@ -135,12 +135,14 @@
     <ClInclude Include="CPP_Desktop.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="DeviceRegister.h" />
+    <ClInclude Include="RegisterBit.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPP_Desktop.cpp" />
     <ClCompile Include="DeviceRegister.cpp" />
+    <ClCompile Include="RegisterBit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CPP_Desktop.rc" />
