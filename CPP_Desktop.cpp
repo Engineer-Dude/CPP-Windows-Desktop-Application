@@ -339,6 +339,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		FillRect(hdc, &rect, hbrRegisterArea);
 
+		// =============================================================
 		// Define the rectangle for the individual register
 		left = 20L;
 		top = 130L + 10L;
@@ -358,15 +359,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 
 		register_0_label = PlaceRegisterArea(hWnd, hdc, reg_0, left, top, right, bottom);
+		// =============================================================
 
 		left = right + 20;
 		right = (LONG)(left + 150);
 		DeviceRegister reg_1 = DeviceRegister("Register 01", 3);
+
+		registerBit = RegisterBit();
+
+		for (int bitPosition = 0; bitPosition < reg_1.GetNumberOfBits(); bitPosition++)
+		{
+			registerBit.SetDescription("Bit " + std::to_string(bitPosition));
+			registerBit.SetIsChecked(true);
+			reg_1.SetBit(bitPosition, registerBit);
+		}
+
 		register_1_label = PlaceRegisterArea(hWnd, hdc, reg_1, left, top, right, bottom);
 
 		left = right + 20;
 		right = (LONG)(left + 150);
 		DeviceRegister reg_2 = DeviceRegister("Register 02", 3);
+
+		registerBit = RegisterBit();
+
+		for (int bitPosition = 0; bitPosition < reg_2.GetNumberOfBits(); bitPosition++)
+		{
+			registerBit.SetDescription("Bit " + std::to_string(bitPosition));
+			registerBit.SetIsChecked(true);
+			reg_2.SetBit(bitPosition, registerBit);
+		}
+
 		register_2_label = PlaceRegisterArea(hWnd, hdc, reg_2, left, top, right, bottom);
 
 		EndPaint(hWnd, &ps);
