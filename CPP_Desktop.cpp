@@ -43,6 +43,7 @@ Gdiplus::Status gdiplusStartupStatus = Gdiplus::GdiplusStartup(&gdiplusToken, &g
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+void DisplayCheckBoxState(HWND hWnd, int controlId, std::string controlName);
 HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, int controls[], LONG& left, LONG& top, LONG& right, LONG& bottom);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -291,124 +292,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_CHECKBOX_REG_0_0:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_0_0) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_0_0 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_0_0 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_0_0, "ID_CHECKBOX_REG_0_0");
 			break;
 		case ID_CHECKBOX_REG_0_1:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_0_1) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_0_1 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_0_1 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_0_1, "ID_CHECKBOX_REG_0_1");
 			break;
 		case ID_CHECKBOX_REG_0_2:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_0_2) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_0_2 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_0_2 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_0_2, "ID_CHECKBOX_REG_0_2");
 			break;
-
 		case ID_CHECKBOX_REG_1_0:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_1_0) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_1_0 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_1_0 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_1_0, "ID_CHECKBOX_REG_1_0");
 			break;
 		case ID_CHECKBOX_REG_1_1:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_1_1) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_1_1 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_1_1 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_1_1, "ID_CHECKBOX_REG_1_1");
 			break;
 		case ID_CHECKBOX_REG_1_2:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_1_2) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_1_2 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_1_2 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_1_2, "ID_CHECKBOX_REG_1_2");
 			break;
-
 		case ID_CHECKBOX_REG_2_0:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_2_0) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_2_0 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_2_0 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_2_0, "ID_CHECKBOX_REG_2_0");
 			break;
 		case ID_CHECKBOX_REG_2_1:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_2_1) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_2_1 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_2_1 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_2_1, "ID_CHECKBOX_REG_2_1");
 			break;
 		case ID_CHECKBOX_REG_2_2:
 			if (HIWORD(wParam) == BN_CLICKED)
-			{
-				if (IsDlgButtonChecked(hWnd, ID_CHECKBOX_REG_2_2) == BST_CHECKED)
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_2_2 is checked"), TEXT("Notification"), MB_OK);
-				}
-				else
-				{
-					MessageBox(hWnd, TEXT("Checkbox REG_2_2 is unchecked"), TEXT("Notification"), MB_OK);
-				}
-			}
+				DisplayCheckBoxState(hWnd, ID_CHECKBOX_REG_2_2, "ID_CHECKBOX_REG_2_2");
 			break;
-
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -447,7 +364,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		FillRect(hdc, &rect, hbrRegisterArea);
 
 		// =============================================================
-		// Define the rectangle for the individual register
+
 		left = 20L;
 		top = 130L + 10L;
 		right = (LONG)(left + 150);
@@ -467,6 +384,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int controls_0[] = { ID_CHECKBOX_REG_0_0, ID_CHECKBOX_REG_0_1, ID_CHECKBOX_REG_0_2 };
 
 		register_0_label = PlaceRegisterArea(hWnd, hdc, reg_0, controls_0, left, top, right, bottom);
+
 		// =============================================================
 
 		left = right + 20;
@@ -482,9 +400,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			reg_1.SetBit(bitPosition, registerBit);
 		}
 
-		int controls_1[] = {ID_CHECKBOX_REG_1_0, ID_CHECKBOX_REG_1_1, ID_CHECKBOX_REG_1_2};
+		int controls_1[] = { ID_CHECKBOX_REG_1_0, ID_CHECKBOX_REG_1_1, ID_CHECKBOX_REG_1_2 };
 
 		register_1_label = PlaceRegisterArea(hWnd, hdc, reg_1, controls_1, left, top, right, bottom);
+
+		// =============================================================
 
 		left = right + 20;
 		right = (LONG)(left + 150);
@@ -503,6 +423,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		register_2_label = PlaceRegisterArea(hWnd, hdc, reg_2, controls_2, left, top, right, bottom);
 
+		// =============================================================
+
 		EndPaint(hWnd, &ps);
 		break;
 	}
@@ -513,6 +435,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+#include <codecvt>
+
+void DisplayCheckBoxState(HWND hWnd, int controlId, std::string controlName)
+{
+	{
+		bool isChecked = IsDlgButtonChecked(hWnd, controlId) == BST_CHECKED;
+
+		std::string str1 = "CheckBox ";
+		std::string str2 = controlName;
+		std::string str3 = isChecked ? " is checked." : " is unchecked.";
+
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+		std::wstring wideStr1 = converter.from_bytes(str1);
+		std::wstring wideStr2 = converter.from_bytes(str2);
+		std::wstring wideStr3 = converter.from_bytes(str3);
+
+		std::wstring combined = wideStr1 + wideStr2 + wideStr3;
+
+		MessageBox(hWnd, combined.c_str(), TEXT("Notification"), MB_OK);
+	}
 }
 
 HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, int controls[], LONG& left, LONG& top, LONG& right, LONG& bottom)
@@ -549,7 +494,7 @@ HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, int controls[], 
 			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,	// Styles
 			left + 20, top + (bitPosition * 30) + 30, 100, 20,	// Position and size
 			hWnd,							// Parent window
-			(HMENU)(controls[bitPosition]),	//
+			(HMENU)(UINT_PTR)(controls[bitPosition]),	//
 			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
 			NULL							// No additional parameters
 		);
