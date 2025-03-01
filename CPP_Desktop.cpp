@@ -539,11 +539,30 @@ void LoadLightbulbPng(HWND hwndParent)
 	if (hResource)
 	{
 		HGLOBAL hMemory = LoadResource(hInst, hResource);
+
+		if (hMemory == NULL)
+		{
+			MessageBox(hwndParent, TEXT("Failed loading resource."), TEXT("Error"), MB_OK);
+			return;
+		}
+
 		DWORD imageSize = SizeofResource(hInst, hResource);
 		void* pResourceData = LockResource(hMemory);
 
-		CoInitialize(nullptr);
-		CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFactory));
+		HRESULT coInitializeResult = CoInitialize(nullptr);
+
+		if (coInitializeResult == NULL)
+		{
+			MessageBox(hwndParent, TEXT("CoInitialize failed."), TEXT("Error"), MB_OK);
+			return;
+		}
+
+	    HRESULT coCreateInstanceResult = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFactory));
+		
+		if (coCreateInstanceResult == NULL)
+		{
+			MessageBox(hwndParent, TEXT("Failed to creates an instance of the specified COM object."), TEXT("Error"), MB_OK);
+		}
 		pFactory->CreateStream(&pStream);
 		pStream->InitializeFromMemory(reinterpret_cast<BYTE*>(pResourceData), imageSize);
 		pFactory->CreateDecoderFromStream(pStream, nullptr, WICDecodeMetadataCacheOnLoad, &pDecoder);
