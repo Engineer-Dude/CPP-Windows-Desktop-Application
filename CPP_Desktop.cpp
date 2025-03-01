@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "CPP_Desktop.h"
 #include "DeviceRegister.h"
+#include <vector>
 
 // These are used for the processing of the png image.
 #include <wincodec.h>
@@ -19,6 +20,8 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+
+std::vector<DeviceRegister> deviceRegisters;
 
 // Brushes
 HBRUSH hBrush = NULL;
@@ -47,8 +50,8 @@ void DisplayCheckBoxState(HWND hWnd, int controlId, std::string controlName);
 HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, int controls[], LONG& left, LONG& top, LONG& right, LONG& bottom);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-// This is a forward declaration of the method used for loading the lightbulb png image.
 void LoadLightbulbPng(HWND hwndParent);
+void InitializeDeviceRegisters();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -64,12 +67,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	// TODO: Place code here.
-
-
 	// Initialize global strings
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_CPPDESKTOP, szWindowClass, MAX_LOADSTRING);
+
+	// Initialize the Device Registers
+	InitializeDeviceRegisters();
+
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
@@ -96,6 +100,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 
 	return (int)msg.wParam;
+}
+
+void InitializeDeviceRegisters()
+{
+	deviceRegisters.emplace_back("Register 0", 3);
+	RegisterBit bit = RegisterBit();
+	for (int i = 0; i < deviceRegisters[0].GetNumberOfBits(); i++)
+	{
+		bit.SetDescription("Bit " + std::to_string(i));
+		bit.SetIsChecked(true);
+		deviceRegisters[0].SetBit(i, bit);
+	}
+
+	deviceRegisters.emplace_back("Register 1", 3);
+	bit = RegisterBit();
+	for (int i = 0; i < deviceRegisters[1].GetNumberOfBits(); i++)
+	{
+		bit.SetDescription("Bit " + std::to_string(i));
+		bit.SetIsChecked(true);
+		deviceRegisters[1].SetBit(i, bit);
+	}
+
+	deviceRegisters.emplace_back("Register 2", 3);
+	bit = RegisterBit();
+	for (int i = 0; i < deviceRegisters[2].GetNumberOfBits(); i++)
+	{
+		bit.SetDescription("Bit " + std::to_string(i));
+		bit.SetIsChecked(true);
+		deviceRegisters[2].SetBit(i, bit);
+	}
 }
 
 //
@@ -370,58 +404,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		right = (LONG)(left + 150);
 		bottom = (LONG)(top + 120);
 
-		DeviceRegister reg_0 = DeviceRegister("Register 00", 3);
-
-		RegisterBit registerBit = RegisterBit();
-
-		for (int bitPosition = 0; bitPosition < reg_0.GetNumberOfBits(); bitPosition++)
-		{
-			registerBit.SetDescription("Bit " + std::to_string(bitPosition));
-			registerBit.SetIsChecked(true);
-			reg_0.SetBit(bitPosition, registerBit);
-		}
-
 		int controls_0[] = { ID_CHECKBOX_REG_0_0, ID_CHECKBOX_REG_0_1, ID_CHECKBOX_REG_0_2 };
 
-		register_0_label = PlaceRegisterArea(hWnd, hdc, reg_0, controls_0, left, top, right, bottom);
+		register_0_label = PlaceRegisterArea(hWnd, hdc, deviceRegisters[0], controls_0, left, top, right, bottom);
 
 		// =============================================================
 
 		left = right + 20;
 		right = (LONG)(left + 150);
-		DeviceRegister reg_1 = DeviceRegister("Register 01", 3);
-
-		registerBit = RegisterBit();
-
-		for (int bitPosition = 0; bitPosition < reg_1.GetNumberOfBits(); bitPosition++)
-		{
-			registerBit.SetDescription("Bit " + std::to_string(bitPosition));
-			registerBit.SetIsChecked(true);
-			reg_1.SetBit(bitPosition, registerBit);
-		}
 
 		int controls_1[] = { ID_CHECKBOX_REG_1_0, ID_CHECKBOX_REG_1_1, ID_CHECKBOX_REG_1_2 };
 
-		register_1_label = PlaceRegisterArea(hWnd, hdc, reg_1, controls_1, left, top, right, bottom);
+		register_1_label = PlaceRegisterArea(hWnd, hdc, deviceRegisters[1], controls_1, left, top, right, bottom);
 
 		// =============================================================
 
 		left = right + 20;
 		right = (LONG)(left + 150);
-		DeviceRegister reg_2 = DeviceRegister("Register 02", 3);
-
-		registerBit = RegisterBit();
-
-		for (int bitPosition = 0; bitPosition < reg_2.GetNumberOfBits(); bitPosition++)
-		{
-			registerBit.SetDescription("Bit " + std::to_string(bitPosition));
-			registerBit.SetIsChecked(true);
-			reg_2.SetBit(bitPosition, registerBit);
-		}
 
 		int controls_2[] = { ID_CHECKBOX_REG_2_0, ID_CHECKBOX_REG_2_1, ID_CHECKBOX_REG_2_2 };
 
-		register_2_label = PlaceRegisterArea(hWnd, hdc, reg_2, controls_2, left, top, right, bottom);
+		register_2_label = PlaceRegisterArea(hWnd, hdc, deviceRegisters[2], controls_2, left, top, right, bottom);
 
 		// =============================================================
 
@@ -487,6 +490,7 @@ HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, int controls[], 
 	for (int bitPosition = 0; bitPosition < reg.GetNumberOfBits(); bitPosition++)
 	{
 		LPCWSTR description = reg.GetBit(bitPosition).GetDescription_LPCWSTR();
+	    bool isChecked = reg.GetBit(bitPosition).GetIsChecked();
 
 		HWND registerBit = CreateWindow(
 			TEXT("BUTTON"),					// Predefined class for a label
@@ -499,6 +503,7 @@ HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, int controls[], 
 			NULL							// No additional parameters
 		);
 
+		SendMessage(registerBit, BM_SETCHECK, isChecked ? BST_CHECKED : BST_UNCHECKED, 0);
 	}
 
 	// Restore the old pen and clean up.
