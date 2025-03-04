@@ -58,6 +58,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 void LoadLightbulbPng(HWND hwndParent);
 void InitializeDeviceRegisters();
+bool CheckForDC590B(DWORD* numberOfDevicesFound);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -84,34 +85,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	FT_HANDLE ftHandle = NULL;
 	FT_STATUS ftStatus;
-	DWORD numberOfDevices;
+	DWORD numberOfDevicesFound;
+	bool dc590bFound = CheckForDC590B(&numberOfDevicesFound);
 
-	bool dc590bFound = true;
-
-	ftStatus = FT_CreateDeviceInfoList(&numberOfDevices);
-	if (ftStatus != FT_OK)
-	{
-		return 1;
-	}
-
-	FT_DEVICE_LIST_INFO_NODE* deviceInfo = new FT_DEVICE_LIST_INFO_NODE[numberOfDevices];
-
-	ftStatus = FT_GetDeviceInfoList(deviceInfo, &numberOfDevices);
-	if (ftStatus != FT_OK)
-	{
-		return 1;
-	}
-
-	if (numberOfDevices == 0)
-	{
-		dc590bFound = false;
-	}
-	else if (numberOfDevices > 1)
-	{
-		// Found more than expected
-		return 1;
-	}
-	else
+	if (dc590bFound)
 	{
 		ftStatus = FT_Open(0, &ftHandle);
 		if (ftStatus != FT_OK)
@@ -148,25 +125,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	MSG msg;
 
+	DWORD numberFound;
 	// 137 = 128 + 8 + 1 = 10001001 = 0x89
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		bool dc590bFound = CheckForDC590B(&numberFound);
 
 		if (dc590bFound == false)
 		{
 			SendMessage(msg.hwnd, WM_UPDATE_STATUS, NULL, reinterpret_cast<LPARAM>("DC590B not found."));
-			Sleep(100);
 		}
 		else
 		{
 			SendMessage(msg.hwnd, WM_UPDATE_STATUS, NULL, reinterpret_cast<LPARAM>("DC590B found."));
-			Sleep(100);
+		}
+
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
 		}
 	}
 
@@ -209,6 +187,39 @@ void InitializeDeviceRegisters()
 		bit.SetDescription("Bit " + std::to_string(i));
 		bit.SetIsChecked(true);
 		deviceRegisters[2].SetBit(i, bit);
+	}
+}
+
+bool CheckForDC590B(DWORD* numberOfDevicesFound)
+{
+	//FT_HANDLE ftHandle = NULL;
+	FT_STATUS ftStatus;
+	//DWORD numberOfDevices;
+
+	bool dc590bFound = true;
+
+	ftStatus = FT_CreateDeviceInfoList(numberOfDevicesFound);
+	if (ftStatus != FT_OK)
+	{
+		return false;
+	}
+
+	FT_DEVICE_LIST_INFO_NODE* deviceInfo = new FT_DEVICE_LIST_INFO_NODE[*numberOfDevicesFound];
+
+	ftStatus = FT_GetDeviceInfoList(deviceInfo, numberOfDevicesFound);
+	if (ftStatus != FT_OK)
+	{
+		return false;
+	}
+
+	if (*numberOfDevicesFound == 0)
+	{
+		return false;
+	}
+	else if (*numberOfDevicesFound > 1)
+	{
+		// Found more than expected
+		return false;
 	}
 }
 
@@ -542,7 +553,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetWindowTextA(statusLabel, text);
 			InvalidateRect(statusLabel, NULL, true);
 		}
-
+		//delete[] text;
+		return 0;
 	}
 	break;
 
