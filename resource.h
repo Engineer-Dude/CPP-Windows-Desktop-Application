@@ -28,6 +28,7 @@
 #define ID_CHECKBOX_REG_2_0				148
 #define ID_CHECKBOX_REG_2_1				149
 #define ID_CHECKBOX_REG_2_2				150
+#define ID_LABEL_STATUS					151
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -35,7 +36,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        151
+#define _APS_NEXT_RESOURCE_VALUE        152
 #define _APS_NEXT_COMMAND_VALUE         32773
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110

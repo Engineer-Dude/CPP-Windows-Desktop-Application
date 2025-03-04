@@ -19,6 +19,8 @@
 
 #define MAX_LOADSTRING 100
 
+#define WM_UPDATE_STATUS (WM_USER + 1)
+
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
@@ -38,6 +40,7 @@ HWND register_0_label;
 HWND register_1_label;
 HWND register_2_label;
 
+HWND hLabelStatus;
 
 // These are used for displaying the png image, including starting it up.
 IWICStream* pStream = nullptr;
@@ -149,15 +152,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
-		if (dc590bFound == false)
-		{
-			SendMessage(msg.hwnd, WM_COMMAND, 0x01000089, NULL);
-		}
-
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+		}
+
+		if (dc590bFound == false)
+		{
+			SendMessage(msg.hwnd, WM_UPDATE_STATUS, NULL, reinterpret_cast<LPARAM>("DC590B not found."));
+			Sleep(100);
+		}
+		else
+		{
+			SendMessage(msg.hwnd, WM_UPDATE_STATUS, NULL, reinterpret_cast<LPARAM>("DC590B found."));
+			Sleep(100);
 		}
 	}
 
@@ -339,7 +348,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		LoadLightbulbPng(hWnd);
 
-		//break;
+		hLabelStatus = CreateWindow(
+			TEXT("STATIC"),				// Predefined class for a label
+			TEXT("  DC590B Status"),		// Text to display
+			WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE,		// Styles
+			10, 280, 510, 30,			// Position and size
+			hWnd,						// Parent window
+			(HMENU)ID_LABEL_STATUS,		// No menu
+			(HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+			NULL						// No additional parameters
+		);
 	}
 				  break;
 
@@ -353,17 +371,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetTextColor(hdcStatic, RGB(0, 0, 0));
 			SetBkColor(hdcStatic, RGB(255, 255, 255));
 
-			if (!hBrush)
-			{
-				hBrush = CreateSolidBrush(RGB(255, 255, 255));
-			}
+			hBrush = CreateSolidBrush(RGB(255, 255, 255));
 
 			// Return the brush to paint the background.
 			return (INT_PTR)hBrush;
 		}
 
-		break;
+		if (hwndStatic == hLabelStatus)
+		{
+			SetTextColor(hdcStatic, RGB(0, 0, 0));
+			SetBkColor(hdcStatic, RGB(200, 200, 200));
+
+			hBrush = CreateSolidBrush(RGB(200, 200, 200));
+
+			// Return the brush to paint the background.
+			return (INT_PTR)hBrush;
+		}
+
+		//break;
 	}
+	break;
 
 	case WM_ERASEBKGND:
 	{
@@ -505,6 +532,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+	case WM_UPDATE_STATUS:
+	{
+		char* text = reinterpret_cast<char*>(lParam);
+		HWND statusLabel = GetDlgItem(hWnd, ID_LABEL_STATUS);
+
+		if (statusLabel)
+		{
+			SetWindowTextA(statusLabel, text);
+			InvalidateRect(statusLabel, NULL, true);
+		}
+
+	}
+	break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
