@@ -33,6 +33,9 @@
     <ClInclude Include="RegisterBit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ftd2xx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPP_Desktop.cpp">
@@ -66,5 +69,11 @@
     <Image Include="favicon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="ftd2xx.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ftd2xx64.dll" />
   </ItemGroup>
 </Project>

@@ -136,6 +136,7 @@
     <ClInclude Include="CPP_Desktop.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="DeviceRegister.h" />
+    <ClInclude Include="ftd2xx.h" />
     <ClInclude Include="RegisterBit.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
@@ -154,6 +155,12 @@
     <Image Include="favicon.ico" />
     <Image Include="Images\Lightbulb.png" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="ftd2xx.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ftd2xx64.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

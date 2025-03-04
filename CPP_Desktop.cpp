@@ -14,6 +14,9 @@
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
+#include "ftd2xx.h"
+#include <iostream>
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -73,6 +76,68 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Initialize the Device Registers
 	InitializeDeviceRegisters();
+
+	// ===========================
+
+	FT_HANDLE ftHandle;
+	FT_STATUS ftStatus;
+	DWORD numberOfDevices;
+
+	ftStatus = FT_CreateDeviceInfoList(&numberOfDevices);
+	if (ftStatus != FT_OK)
+	{
+		// Error
+	}
+
+	FT_DEVICE_LIST_INFO_NODE* deviceInfo = new FT_DEVICE_LIST_INFO_NODE[numberOfDevices];
+
+	ftStatus = FT_GetDeviceInfoList(deviceInfo, &numberOfDevices);
+	if (ftStatus != FT_OK)
+	{
+		// Error
+	}
+
+	if (numberOfDevices == 0)
+	{
+		// Found none
+	}
+	else if (numberOfDevices > 1)
+	{
+		// Found more than expected
+		// Expected
+	}
+	else
+	{
+
+		ftStatus = FT_Open(0, &ftHandle);
+		if (ftStatus != FT_OK)
+		{
+			// Error
+		}
+
+		FT_SetBaudRate(ftHandle, 9600);
+		FT_SetDataCharacteristics(ftHandle, FT_BITS_8, FT_STOP_BITS_1, FT_PARITY_NONE);
+		FT_SetTimeouts(ftHandle, 1000, 1000);
+
+		DWORD bytesWritten;
+		char writeBuffer[] = "i\r";
+		DWORD bytesRead;
+		char readBuffer[256]{ 0 };
+
+		ftStatus = FT_Write(ftHandle, writeBuffer, sizeof(writeBuffer) / sizeof(char), &bytesWritten);
+		ftStatus = FT_Read(ftHandle, readBuffer, 41, &bytesRead);
+
+		std::cout << "DC590B returned " << readBuffer << std::endl;
+
+
+		ftStatus = FT_Close(ftHandle);
+		if (ftStatus != FT_OK)
+		{
+			// Error
+		}
+	}
+
+	// ===========================
 
 	MyRegisterClass(hInstance);
 
@@ -490,7 +555,7 @@ HWND PlaceRegisterArea(HWND& hWnd, HDC hdc, DeviceRegister reg, int controls[], 
 	for (int bitPosition = 0; bitPosition < reg.GetNumberOfBits(); bitPosition++)
 	{
 		LPCWSTR description = reg.GetBit(bitPosition).GetDescription_LPCWSTR();
-	    bool isChecked = reg.GetBit(bitPosition).GetIsChecked();
+		bool isChecked = reg.GetBit(bitPosition).GetIsChecked();
 
 		HWND registerBit = CreateWindow(
 			TEXT("BUTTON"),					// Predefined class for a label
@@ -562,8 +627,8 @@ void LoadLightbulbPng(HWND hwndParent)
 			return;
 		}
 
-	    HRESULT coCreateInstanceResult = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFactory));
-		
+		HRESULT coCreateInstanceResult = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFactory));
+
 		if (coCreateInstanceResult != S_OK)
 		{
 			MessageBox(hwndParent, TEXT("Failed to creates an instance of the specified COM object."), TEXT("Error"), MB_OK);
