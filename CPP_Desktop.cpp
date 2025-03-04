@@ -79,14 +79,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// ===========================
 
-	FT_HANDLE ftHandle;
+	FT_HANDLE ftHandle = NULL;
 	FT_STATUS ftStatus;
 	DWORD numberOfDevices;
+
+	bool dc590bFound = true;
 
 	ftStatus = FT_CreateDeviceInfoList(&numberOfDevices);
 	if (ftStatus != FT_OK)
 	{
-		// Error
+		return 1;
 	}
 
 	FT_DEVICE_LIST_INFO_NODE* deviceInfo = new FT_DEVICE_LIST_INFO_NODE[numberOfDevices];
@@ -94,21 +96,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	ftStatus = FT_GetDeviceInfoList(deviceInfo, &numberOfDevices);
 	if (ftStatus != FT_OK)
 	{
-		// Error
+		return 1;
 	}
 
 	if (numberOfDevices == 0)
 	{
-		// Found none
+		dc590bFound = false;
 	}
 	else if (numberOfDevices > 1)
 	{
 		// Found more than expected
-		// Expected
+		return 1;
 	}
 	else
 	{
-
 		ftStatus = FT_Open(0, &ftHandle);
 		if (ftStatus != FT_OK)
 		{
@@ -128,13 +129,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		ftStatus = FT_Read(ftHandle, readBuffer, 41, &bytesRead);
 
 		std::cout << "DC590B returned " << readBuffer << std::endl;
-
-
-		ftStatus = FT_Close(ftHandle);
-		if (ftStatus != FT_OK)
-		{
-			// Error
-		}
 	}
 
 	// ===========================
@@ -151,14 +145,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	MSG msg;
 
+	// 137 = 128 + 8 + 1 = 10001001 = 0x89
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
+		if (dc590bFound == false)
+		{
+			SendMessage(msg.hwnd, WM_COMMAND, 0x01000089, NULL);
+		}
+
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+	}
+
+	ftStatus = FT_Close(ftHandle);
+	if (ftStatus != FT_OK)
+	{
+		// Error
 	}
 
 	// This is for shutting Gdiplus
