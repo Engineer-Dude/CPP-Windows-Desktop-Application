@@ -42,6 +42,9 @@ HWND register_2_label;
 
 HWND hLabelStatus;
 
+FT_HANDLE ftHandle = NULL;
+FT_STATUS ftStatus;
+
 // These are used for displaying the png image, including starting it up.
 IWICStream* pStream = nullptr;
 Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -83,33 +86,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// ===========================
 
-	FT_HANDLE ftHandle = NULL;
-	FT_STATUS ftStatus;
 	DWORD numberOfDevicesFound;
 	bool dc590bFound = CheckForDC590B(&numberOfDevicesFound);
-
-	if (dc590bFound)
-	{
-		ftStatus = FT_Open(0, &ftHandle);
-		if (ftStatus != FT_OK)
-		{
-			// Error
-		}
-
-		FT_SetBaudRate(ftHandle, 9600);
-		FT_SetDataCharacteristics(ftHandle, FT_BITS_8, FT_STOP_BITS_1, FT_PARITY_NONE);
-		FT_SetTimeouts(ftHandle, 1000, 1000);
-
-		DWORD bytesWritten;
-		char writeBuffer[] = "i\r";
-		DWORD bytesRead;
-		char readBuffer[256]{ 0 };
-
-		ftStatus = FT_Write(ftHandle, writeBuffer, sizeof(writeBuffer) / sizeof(char), &bytesWritten);
-		ftStatus = FT_Read(ftHandle, readBuffer, 41, &bytesRead);
-
-		std::cout << "DC590B returned " << readBuffer << std::endl;
-	}
 
 	// ===========================
 
@@ -126,7 +104,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MSG msg;
 
 	DWORD numberFound;
-	// 137 = 128 + 8 + 1 = 10001001 = 0x89
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{
@@ -135,10 +112,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (dc590bFound == false)
 		{
 			SendMessage(msg.hwnd, WM_UPDATE_STATUS, NULL, reinterpret_cast<LPARAM>("DC590B not found."));
+
+			if (ftHandle != NULL)
+			{
+				ftStatus = FT_Close(ftHandle);
+				ftHandle = NULL;
+			}
 		}
 		else
 		{
 			SendMessage(msg.hwnd, WM_UPDATE_STATUS, NULL, reinterpret_cast<LPARAM>("DC590B found."));
+
+			if (ftHandle == NULL)
+			{
+
+				ftStatus = FT_Open(0, &ftHandle);
+				if (ftStatus != FT_OK)
+				{
+					// Error
+				}
+
+				FT_SetBaudRate(ftHandle, 9600);
+				FT_SetDataCharacteristics(ftHandle, FT_BITS_8, FT_STOP_BITS_1, FT_PARITY_NONE);
+				FT_SetTimeouts(ftHandle, 1000, 1000);
+
+				DWORD bytesWritten;
+				char writeBuffer[] = "i\r";
+				DWORD bytesRead;
+				char readBuffer[256]{ 0 };
+
+				ftStatus = FT_Write(ftHandle, writeBuffer, sizeof(writeBuffer) / sizeof(char), &bytesWritten);
+				ftStatus = FT_Read(ftHandle, readBuffer, 41, &bytesRead);
+			}
 		}
 
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
